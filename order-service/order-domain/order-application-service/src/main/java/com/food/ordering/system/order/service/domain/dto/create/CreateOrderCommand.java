@@ -13,7 +13,6 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 public class CreateOrderCommand {
-
     @NotNull
     private final UUID customerId;
     @NotNull
@@ -24,5 +23,4 @@ public class CreateOrderCommand {
     private final List<OrderItem> items;
     @NotNull
     private final OrderAddress address;
-
 }

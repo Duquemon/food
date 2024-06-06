@@ -5,9 +5,9 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 public class Money {
-    public static final Money ZERO = new Money(BigDecimal.ZERO);
-
     private final BigDecimal amount;
+
+    public static final Money ZERO = new Money(BigDecimal.ZERO);
 
     public Money(BigDecimal amount) {
         this.amount = amount;
@@ -18,7 +18,7 @@ public class Money {
     }
 
     public boolean isGreaterThan(Money money) {
-        return this.amount != null && this.amount.compareTo(money.amount) > 0;
+        return this.amount != null && this.amount.compareTo(money.getAmount()) > 0;
     }
 
     public Money add(Money money) {
@@ -42,12 +42,12 @@ public class Money {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Money money = (Money) o;
-        return Objects.equals(amount, money.amount);
+        return amount.equals(money.amount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(amount);
+        return Objects.hash(amount);
     }
 
     private BigDecimal setScale(BigDecimal input) {

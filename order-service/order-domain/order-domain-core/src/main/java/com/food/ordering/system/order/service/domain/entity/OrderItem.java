@@ -35,6 +35,7 @@ public class OrderItem extends BaseEntity<OrderItemId> {
         return new Builder();
     }
 
+
     public OrderId getOrderId() {
         return orderId;
     }

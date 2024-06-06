@@ -7,31 +7,30 @@ import com.food.ordering.system.order.service.domain.mapper.OrderDataMapper;
 import com.food.ordering.system.order.service.domain.ports.output.message.publisher.payment.OrderCreatedPaymentRequestMessagePublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
 public class OrderCreateCommandHandler {
 
-    private final OrderCreateHelper order;
+    private final OrderCreateHelper orderCreateHelper;
+
     private final OrderDataMapper orderDataMapper;
+
     private final OrderCreatedPaymentRequestMessagePublisher orderCreatedPaymentRequestMessagePublisher;
 
-    public OrderCreateCommandHandler(OrderCreateHelper order,
+    public OrderCreateCommandHandler(OrderCreateHelper orderCreateHelper,
                                      OrderDataMapper orderDataMapper,
                                      OrderCreatedPaymentRequestMessagePublisher orderCreatedPaymentRequestMessagePublisher) {
-        this.order = order;
+        this.orderCreateHelper = orderCreateHelper;
         this.orderDataMapper = orderDataMapper;
         this.orderCreatedPaymentRequestMessagePublisher = orderCreatedPaymentRequestMessagePublisher;
     }
 
-    @Transactional
     public CreateOrderResponse createOrder(CreateOrderCommand createOrderCommand) {
-        OrderCreatedEvent orderCreatedEvent = order.persistOrder(createOrderCommand);
-        log.info("Order created with id {}", orderCreatedEvent.getOrder().getId().getValue());
+        OrderCreatedEvent orderCreatedEvent = orderCreateHelper.persistOrder(createOrderCommand);
+        log.info("Order is created with id: {}", orderCreatedEvent.getOrder().getId().getValue());
         orderCreatedPaymentRequestMessagePublisher.publish(orderCreatedEvent);
-        return orderDataMapper.orderToCreateOrderResponse(orderCreatedEvent.getOrder());
+        return orderDataMapper.orderToCreateOrderResponse(orderCreatedEvent.getOrder(),
+                "Order created successfully");
     }
-
-
 }
