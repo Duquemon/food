@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Order extends AggregateRoot<OrderId> {
+    public static final String DELIMITER_COMMA = ",";
     private final CustomerId customerId;
     private final RestaurantId restaurantId;
     private final StreetAddress deliveryAddress;
