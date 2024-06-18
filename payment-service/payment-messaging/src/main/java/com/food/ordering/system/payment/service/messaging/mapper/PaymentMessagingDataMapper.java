@@ -15,11 +15,13 @@ import java.util.UUID;
 @Component
 public class PaymentMessagingDataMapper {
 
-    public PaymentResponseAvroModel paymentCompletedEventToPaymentResponseAvroModel(PaymentCompletedEvent paymentCompletedEvent) {
+    public PaymentResponseAvroModel
+    paymentCompletedEventToPaymentResponseAvroModel(PaymentCompletedEvent paymentCompletedEvent) {
         return PaymentResponseAvroModel.newBuilder()
                 .setId(UUID.randomUUID().toString())
                 .setSagaId("")
                 .setPaymentId(paymentCompletedEvent.getPayment().getId().getValue().toString())
+                .setCustomerId(paymentCompletedEvent.getPayment().getCustomerId().getValue().toString())
                 .setOrderId(paymentCompletedEvent.getPayment().getOrderId().getValue().toString())
                 .setPrice(paymentCompletedEvent.getPayment().getPrice().getAmount())
                 .setCreatedAt(paymentCompletedEvent.getCreatedAt().toInstant())
@@ -28,11 +30,13 @@ public class PaymentMessagingDataMapper {
                 .build();
     }
 
-    public PaymentResponseAvroModel paymentCancelledEventToPaymentResponseAvroModel(PaymentCancelledEvent paymentCancelledEvent) {
+    public PaymentResponseAvroModel
+    paymentCancelledEventToPaymentResponseAvroModel(PaymentCancelledEvent paymentCancelledEvent) {
         return PaymentResponseAvroModel.newBuilder()
                 .setId(UUID.randomUUID().toString())
                 .setSagaId("")
                 .setPaymentId(paymentCancelledEvent.getPayment().getId().getValue().toString())
+                .setCustomerId(paymentCancelledEvent.getPayment().getCustomerId().getValue().toString())
                 .setOrderId(paymentCancelledEvent.getPayment().getOrderId().getValue().toString())
                 .setPrice(paymentCancelledEvent.getPayment().getPrice().getAmount())
                 .setCreatedAt(paymentCancelledEvent.getCreatedAt().toInstant())
@@ -41,11 +45,13 @@ public class PaymentMessagingDataMapper {
                 .build();
     }
 
-    public PaymentResponseAvroModel paymentFailedEventToPaymentResponseAvroModel(PaymentFailedEvent paymentFailedEvent) {
+    public PaymentResponseAvroModel
+    paymentFailedEventToPaymentResponseAvroModel(PaymentFailedEvent paymentFailedEvent) {
         return PaymentResponseAvroModel.newBuilder()
                 .setId(UUID.randomUUID().toString())
                 .setSagaId("")
                 .setPaymentId(paymentFailedEvent.getPayment().getId().getValue().toString())
+                .setCustomerId(paymentFailedEvent.getPayment().getCustomerId().getValue().toString())
                 .setOrderId(paymentFailedEvent.getPayment().getOrderId().getValue().toString())
                 .setPrice(paymentFailedEvent.getPayment().getPrice().getAmount())
                 .setCreatedAt(paymentFailedEvent.getCreatedAt().toInstant())
