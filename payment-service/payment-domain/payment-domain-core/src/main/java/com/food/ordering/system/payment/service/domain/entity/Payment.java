@@ -17,17 +17,18 @@ public class Payment extends AggregateRoot<PaymentId> {
     private final OrderId orderId;
     private final CustomerId customerId;
     private final Money price;
+
     private PaymentStatus paymentStatus;
     private ZonedDateTime createdAt;
 
-    public void initializedPayment() {
+    public void initializePayment() {
         setId(new PaymentId(UUID.randomUUID()));
         createdAt = ZonedDateTime.now(ZoneId.of("UTC"));
     }
 
     public void validatePayment(List<String> failureMessages) {
         if (price == null || !price.isGreaterThanZero()) {
-            failureMessages.add("Total price must be greater than zero");
+            failureMessages.add("Total price must be greater than zero!");
         }
     }
 
