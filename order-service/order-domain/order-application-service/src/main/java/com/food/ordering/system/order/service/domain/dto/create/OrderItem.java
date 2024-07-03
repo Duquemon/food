@@ -17,7 +17,15 @@ public class OrderItem {
     @NotNull
     private final Integer quantity;
     @NotNull
-    private final BigDecimal price;
+    private BigDecimal price;
     @NotNull
-    private final BigDecimal subTotal;
+    private BigDecimal subTotal;
+
+    public void setPrice(@NotNull BigDecimal price) {
+        this.price = price;
+    }
+
+    public void setSubTotal(@NotNull BigDecimal subTotal) {
+        this.subTotal = subTotal;
+    }
 }

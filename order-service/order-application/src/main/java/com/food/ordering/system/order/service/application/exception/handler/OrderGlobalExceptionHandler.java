@@ -28,12 +28,12 @@ public class OrderGlobalExceptionHandler extends GlobalExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(value = {OrderNotFoundException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDTO handleException(OrderNotFoundException notFoundException) {
-        log.error(notFoundException.getMessage(), notFoundException);
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorDTO handleException(OrderNotFoundException orderNotFoundException) {
+        log.error(orderNotFoundException.getMessage(), orderNotFoundException);
         return ErrorDTO.builder()
                 .code(HttpStatus.NOT_FOUND.getReasonPhrase())
-                .message(notFoundException.getMessage())
+                .message(orderNotFoundException.getMessage())
                 .build();
     }
 }

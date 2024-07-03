@@ -17,21 +17,18 @@ import java.util.UUID;
 @Table(name = "orders")
 @Entity
 public class OrderEntity {
-
     @Id
     private UUID id;
     private UUID customerId;
     private UUID restaurantId;
     private UUID trackingId;
     private BigDecimal price;
-
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
-
     private String failureMessages;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-    private OrderAddessEntity addess;
+    private OrderAddressEntity address;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItemEntity> items;
@@ -41,11 +38,11 @@ public class OrderEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderEntity that = (OrderEntity) o;
-        return Objects.equals(id, that.id);
+        return id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(id);
     }
 }

@@ -12,7 +12,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Order extends AggregateRoot<OrderId> {
-    public static final String DELIMITER_COMMA = ",";
     private final CustomerId customerId;
     private final RestaurantId restaurantId;
     private final StreetAddress deliveryAddress;
@@ -23,6 +22,8 @@ public class Order extends AggregateRoot<OrderId> {
     private OrderStatus orderStatus;
     private List<String> failureMessages;
 
+    public static final String FAILURE_MESSAGE_DELIMITER = ",";
+
     public void initializeOrder() {
         setId(new OrderId(UUID.randomUUID()));
         trackingId = new TrackingId(UUID.randomUUID());
@@ -30,10 +31,11 @@ public class Order extends AggregateRoot<OrderId> {
         initializeOrderItems();
     }
 
-    public void validateOrder() {
+    public void validateOrder(boolean discount) {
         validateInitialOrder();
         validateTotalPrice();
-        validateItemsPrice();
+        if (!discount)
+            validateItemsPrice();
     }
 
     public void pay() {
@@ -68,8 +70,8 @@ public class Order extends AggregateRoot<OrderId> {
 
     private void updateFailureMessages(List<String> failureMessages) {
         if (this.failureMessages != null && failureMessages != null) {
-            this.failureMessages.addAll(failureMessages.stream().filter(message ->
-                    !message.isEmpty()).collect(Collectors.toList()));
+            this.failureMessages.addAll(failureMessages.stream().filter(message -> !message.isEmpty())
+                    .collect(Collectors.toList()));
         }
         if (this.failureMessages == null) {
             this.failureMessages = failureMessages;

@@ -14,20 +14,22 @@ import java.util.UUID;
 @Component
 public class RestaurantRepositoryImpl implements RestaurantRepository {
 
-    private final RestaurantJpaRepository repository;
+    private final RestaurantJpaRepository restaurantJpaRepository;
     private final RestaurantDataAccessMapper restaurantDataAccessMapper;
 
-    public RestaurantRepositoryImpl(RestaurantJpaRepository repository,
+    public RestaurantRepositoryImpl(RestaurantJpaRepository restaurantJpaRepository,
                                     RestaurantDataAccessMapper restaurantDataAccessMapper) {
-        this.repository = repository;
+        this.restaurantJpaRepository = restaurantJpaRepository;
         this.restaurantDataAccessMapper = restaurantDataAccessMapper;
     }
 
     @Override
     public Optional<Restaurant> findRestaurantInformation(Restaurant restaurant) {
-        List<UUID> restaurantProducts = restaurantDataAccessMapper.restaurantToRestaurantProducts(restaurant);
-        Optional<List<RestaurantEntity>> restaurantEntities = repository
-                .findByRestaurantIdAndProductIdIn(restaurant.getId().getValue(), restaurantProducts);
+        List<UUID> restaurantProducts =
+                restaurantDataAccessMapper.restaurantToRestaurantProducts(restaurant);
+        Optional<List<RestaurantEntity>> restaurantEntities = restaurantJpaRepository
+                .findByRestaurantIdAndProductIdIn(restaurant.getId().getValue(),
+                        restaurantProducts);
         return restaurantEntities.map(restaurantDataAccessMapper::restaurantEntityToRestaurant);
     }
 }

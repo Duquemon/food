@@ -1,9 +1,9 @@
 package com.food.ordering.system.order.service.domain.outbox.scheduler.payment;
 
-import com.food.ordering.system.outbox.OutboxScheduler;
-import com.food.ordering.system.outbox.OutboxStatus;
 import com.food.ordering.system.order.service.domain.outbox.model.payment.OrderPaymentOutboxMessage;
 import com.food.ordering.system.order.service.domain.ports.output.message.publisher.payment.PaymentRequestMessagePublisher;
+import com.food.ordering.system.outbox.OutboxScheduler;
+import com.food.ordering.system.outbox.OutboxStatus;
 import com.food.ordering.system.saga.SagaStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,27 +27,29 @@ public class PaymentOutboxScheduler implements OutboxScheduler {
         this.paymentRequestMessagePublisher = paymentRequestMessagePublisher;
     }
 
+
+
     @Override
     @Transactional
     @Scheduled(fixedDelayString = "${order-service.outbox-scheduler-fixed-rate}",
-            initialDelayString = "${order-service.outbox-scheduler-initial-delay}")
+                initialDelayString = "${order-service.outbox-scheduler-initial-delay}")
     public void processOutboxMessage() {
-        Optional<List<OrderPaymentOutboxMessage>> paymentOutboxMessageByOutboxStatusAndSagaStatus =
-                paymentOutboxHelper.getPaymentOutboxMessageByOutboxStatusAndSagaStatus(OutboxStatus.STARTED,
-                    SagaStatus.STARTED, SagaStatus.COMPENSATING);
+       Optional<List<OrderPaymentOutboxMessage>> outboxMessagesResponse =
+               paymentOutboxHelper.getPaymentOutboxMessageByOutboxStatusAndSagaStatus(
+                       OutboxStatus.STARTED,
+                       SagaStatus.STARTED,
+                       SagaStatus.COMPENSATING);
 
-        if (paymentOutboxMessageByOutboxStatusAndSagaStatus.isPresent() &&
-                paymentOutboxMessageByOutboxStatusAndSagaStatus.get().size() > 0) {
-            List<OrderPaymentOutboxMessage> orderPaymentOutboxMessages =
-                    paymentOutboxMessageByOutboxStatusAndSagaStatus.get();
-
-            log.info("Received {} OrderPaymentOutboxMessage with ids: {}, sending to kafka",
-                    orderPaymentOutboxMessages.size(),
-                    orderPaymentOutboxMessages.stream().map(message ->
-                            message.getId().toString()).collect(Collectors.joining(",")));
-            orderPaymentOutboxMessages.forEach(outboxMessage ->
-                    paymentRequestMessagePublisher.publish(outboxMessage, this::updateOutboxStatus));
-        }
+       if (outboxMessagesResponse.isPresent() && outboxMessagesResponse.get().size() > 0) {
+           List<OrderPaymentOutboxMessage> outboxMessages = outboxMessagesResponse.get();
+           log.info("Received {} OrderPaymentOutboxMessage with ids: {}, sending to message bus!",
+                   outboxMessages.size(),
+                   outboxMessages.stream().map(outboxMessage ->
+                           outboxMessage.getId().toString()).collect(Collectors.joining(",")));
+           outboxMessages.forEach(outboxMessage ->
+                   paymentRequestMessagePublisher.publish(outboxMessage, this::updateOutboxStatus));
+           log.info("{} OrderPaymentOutboxMessage sent to message bus!", outboxMessages.size());
+       }
 
     }
 
@@ -55,6 +57,5 @@ public class PaymentOutboxScheduler implements OutboxScheduler {
         orderPaymentOutboxMessage.setOutboxStatus(outboxStatus);
         paymentOutboxHelper.save(orderPaymentOutboxMessage);
         log.info("OrderPaymentOutboxMessage is updated with outbox status: {}", outboxStatus.name());
-
     }
 }

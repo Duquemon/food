@@ -23,18 +23,19 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<CreateOrderResponse> createOrder(@RequestBody CreateOrderCommand command) {
-        log.info("Request order for customer {} at restaurant: {}", command.getCustomerId(), command.getRestaurantId());
-        CreateOrderResponse order = orderApplicationService.createOrder(command);
-        log.info("Order created with tracking id: {}", order.getOrderTackingId());
-        return ResponseEntity.ok(order);
+    public ResponseEntity<CreateOrderResponse> createOrder(@RequestBody CreateOrderCommand createOrderCommand) {
+        log.info("Creating order for customer: {} at restaurant: {}", createOrderCommand.getCustomerId(),
+                createOrderCommand.getRestaurantId());
+        CreateOrderResponse createOrderResponse = orderApplicationService.createOrder(createOrderCommand);
+        log.info("Order created with tracking id: {}", createOrderResponse.getOrderTrackingId());
+        return ResponseEntity.ok(createOrderResponse);
     }
 
-    @GetMapping("/{trackId}")
-    public ResponseEntity<TrackOrderResponse> getOrderByTrackingId(@PathVariable UUID trackId) {
-        log.info("Get order by trackId: {}", trackId);
-        TrackOrderResponse trackOrderResponse = orderApplicationService.trackOrder(new TrackOrderQuery(trackId));
-        log.info("Order status is {} with tracking id {}", trackOrderResponse.getOrderStatus(), trackOrderResponse.getOrderTrackingId());
-        return ResponseEntity.ok(trackOrderResponse);
+    @GetMapping("/{trackingId}")
+    public ResponseEntity<TrackOrderResponse> getOrderByTrackingId(@PathVariable UUID trackingId) {
+       TrackOrderResponse trackOrderResponse =
+               orderApplicationService.trackOrder(TrackOrderQuery.builder().orderTrackingId(trackingId).build());
+       log.info("Returning order status with tracking id: {}", trackOrderResponse.getOrderTrackingId());
+       return  ResponseEntity.ok(trackOrderResponse);
     }
 }

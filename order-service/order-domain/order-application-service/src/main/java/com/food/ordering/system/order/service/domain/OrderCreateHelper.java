@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,7 +32,6 @@ public class OrderCreateHelper {
 
     private final OrderDataMapper orderDataMapper;
 
-
     public OrderCreateHelper(OrderDomainService orderDomainService,
                              OrderRepository orderRepository,
                              CustomerRepository customerRepository,
@@ -46,13 +46,27 @@ public class OrderCreateHelper {
 
     @Transactional
     public OrderCreatedEvent persistOrder(CreateOrderCommand createOrderCommand) {
-        checkCustomer(createOrderCommand.getCustomerId());
+        Customer customer = checkCustomer(createOrderCommand.getCustomerId());
+        boolean hasDiscount = validateDiscount(customer, createOrderCommand);
         Restaurant restaurant = checkRestaurant(createOrderCommand);
         Order order = orderDataMapper.createOrderCommandToOrder(createOrderCommand);
-        OrderCreatedEvent orderCreatedEvent = orderDomainService.validateAndInitiateOrder(order, restaurant);
+        OrderCreatedEvent orderCreatedEvent = orderDomainService.validateAndInitiateOrder(order, restaurant, hasDiscount);
+
         saveOrder(order);
         log.info("Order is created with id: {}", orderCreatedEvent.getOrder().getId().getValue());
         return orderCreatedEvent;
+    }
+
+    private boolean validateDiscount(Customer customer, CreateOrderCommand createOrderCommand) {
+        if (customer.getScoring() >= 100) {
+            createOrderCommand.divide(2);
+            customer.setScoring(0);
+            return true;
+        } else {
+            customer.setScoring(customer.getScoring() + 10);
+        }
+        customerRepository.save(customer);
+        return false;
     }
 
     private Restaurant checkRestaurant(CreateOrderCommand createOrderCommand) {
@@ -66,12 +80,13 @@ public class OrderCreateHelper {
         return optionalRestaurant.get();
     }
 
-    private void checkCustomer(UUID customerId) {
-        Optional<Customer> customer = customerRepository.findCustomer(customerId);
+    private Customer checkCustomer(UUID customerId) {
+        Optional<Customer> customer = customerRepository.findByCustomerId(customerId);
         if (customer.isEmpty()) {
             log.warn("Could not find customer with customer id: {}", customerId);
             throw new OrderDomainException("Could not find customer with customer id: " + customer);
         }
+        return customer.get();
     }
 
     private Order saveOrder(Order order) {

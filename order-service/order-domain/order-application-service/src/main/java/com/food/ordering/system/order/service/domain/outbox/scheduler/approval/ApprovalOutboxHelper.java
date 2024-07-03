@@ -2,12 +2,12 @@ package com.food.ordering.system.order.service.domain.outbox.scheduler.approval;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.food.ordering.system.outbox.OutboxStatus;
 import com.food.ordering.system.domain.valueobject.OrderStatus;
 import com.food.ordering.system.order.service.domain.exception.OrderDomainException;
 import com.food.ordering.system.order.service.domain.outbox.model.approval.OrderApprovalEventPayload;
 import com.food.ordering.system.order.service.domain.outbox.model.approval.OrderApprovalOutboxMessage;
 import com.food.ordering.system.order.service.domain.ports.output.repository.ApprovalOutboxRepository;
+import com.food.ordering.system.outbox.OutboxStatus;
 import com.food.ordering.system.saga.SagaStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,39 +24,37 @@ import static com.food.ordering.system.saga.order.SagaConstants.ORDER_SAGA_NAME;
 public class ApprovalOutboxHelper {
 
     private final ApprovalOutboxRepository approvalOutboxRepository;
-
     private final ObjectMapper objectMapper;
 
-    public ApprovalOutboxHelper(ApprovalOutboxRepository approvalOutboxRepository,
-                                ObjectMapper objectMapper) {
+    public ApprovalOutboxHelper(ApprovalOutboxRepository approvalOutboxRepository, ObjectMapper objectMapper) {
         this.approvalOutboxRepository = approvalOutboxRepository;
         this.objectMapper = objectMapper;
     }
 
     @Transactional(readOnly = true)
-    public Optional<List<OrderApprovalOutboxMessage>> getApprovalOutboxMessageByOutboxStatusAndSagaStatus(
-            OutboxStatus outboxStatus, SagaStatus... sagaStatuses) {
+    public Optional<List<OrderApprovalOutboxMessage>>
+    getApprovalOutboxMessageByOutboxStatusAndSagaStatus(
+            OutboxStatus outboxStatus, SagaStatus... sagaStatus) {
         return approvalOutboxRepository.findByTypeAndOutboxStatusAndSagaStatus(ORDER_SAGA_NAME,
-                outboxStatus, sagaStatuses);
+                outboxStatus,
+                sagaStatus);
     }
 
     @Transactional(readOnly = true)
     public Optional<OrderApprovalOutboxMessage>
-        getApprovalOutboxMessageBySagaIdAndSagaStatus(UUID sagaId, SagaStatus... sagaStatus) {
+    getApprovalOutboxMessageBySagaIdAndSagaStatus(UUID sagaId, SagaStatus... sagaStatus) {
         return approvalOutboxRepository.findByTypeAndSagaIdAndSagaStatus(ORDER_SAGA_NAME, sagaId, sagaStatus);
     }
 
     @Transactional
     public void save(OrderApprovalOutboxMessage orderApprovalOutboxMessage) {
-        OrderApprovalOutboxMessage save = approvalOutboxRepository.save(orderApprovalOutboxMessage);
-
-        if (save == null) {
+        OrderApprovalOutboxMessage response = approvalOutboxRepository.save(orderApprovalOutboxMessage);
+        if (response == null) {
             log.error("Could not save OrderApprovalOutboxMessage with outbox id: {}",
                     orderApprovalOutboxMessage.getId());
             throw new OrderDomainException("Could not save OrderApprovalOutboxMessage with outbox id: " +
                     orderApprovalOutboxMessage.getId());
         }
-
         log.info("OrderApprovalOutboxMessage saved with outbox id: {}", orderApprovalOutboxMessage.getId());
     }
 
@@ -80,8 +78,8 @@ public class ApprovalOutboxHelper {
 
     @Transactional
     public void deleteApprovalOutboxMessageByOutboxStatusAndSagaStatus(OutboxStatus outboxStatus,
-                                                                       SagaStatus... sagaStatuses) {
-        approvalOutboxRepository.deleteByTypeOutboxStatusAndSagaStatus(ORDER_SAGA_NAME, outboxStatus, sagaStatuses);
+                                                                       SagaStatus... sagaStatus) {
+        approvalOutboxRepository.deleteByTypeAndOutboxStatusAndSagaStatus(ORDER_SAGA_NAME, outboxStatus, sagaStatus);
     }
 
     private String createPayload(OrderApprovalEventPayload orderApprovalEventPayload) {

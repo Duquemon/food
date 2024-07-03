@@ -19,6 +19,7 @@ import java.util.UUID;
 @Table(name = "order_restaurant_m_view", schema = "restaurant")
 @Entity
 public class RestaurantEntity {
+
     @Id
     private UUID restaurantId;
     @Id
@@ -34,7 +35,7 @@ public class RestaurantEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RestaurantEntity that = (RestaurantEntity) o;
-        return Objects.equals(restaurantId, that.restaurantId) && Objects.equals(productId, that.productId);
+        return restaurantId.equals(that.restaurantId) && productId.equals(that.productId);
     }
 
     @Override

@@ -20,7 +20,7 @@ public class OrderItemEntityId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderItemEntityId that = (OrderItemEntityId) o;
-        return Objects.equals(id, that.id) && Objects.equals(order, that.order);
+        return id.equals(that.id) && order.equals(that.order);
     }
 
     @Override

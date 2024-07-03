@@ -22,17 +22,16 @@ public class OrderSagaHelper {
         this.orderRepository = orderRepository;
     }
 
-    public Order findOrder(String orderId) {
-        Optional<Order> byId = orderRepository.findById(new OrderId(UUID.fromString(orderId)));
-
-        if (byId.isEmpty()) {
-            log.error("Order with id: {} could not be found", orderId);
-            throw new OrderNotFoundException("Order with id " + orderId + "not found");
+    Order findOrder(String orderId) {
+        Optional<Order> orderResponse = orderRepository.findById(new OrderId(UUID.fromString(orderId)));
+        if (orderResponse.isEmpty()) {
+            log.error("Order with id: {} could not be found!", orderId);
+            throw new OrderNotFoundException("Order with id " + orderId + " could not be found!");
         }
-        return byId.get();
+        return orderResponse.get();
     }
 
-    public void saveOrder(Order order) {
+    void saveOrder(Order order) {
         orderRepository.save(order);
     }
 

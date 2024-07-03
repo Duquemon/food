@@ -19,11 +19,10 @@ import static com.food.ordering.system.domain.DomainConstants.UTC;
 public class OrderDomainServiceImpl implements OrderDomainService {
 
     @Override
-    public OrderCreatedEvent validateAndInitiateOrder(Order order,
-                                                      Restaurant restaurant) {
+    public OrderCreatedEvent validateAndInitiateOrder(Order order, Restaurant restaurant, boolean discount) {
         validateRestaurant(restaurant);
         setOrderProductInformation(order, restaurant);
-        order.validateOrder();
+        order.validateOrder(discount);
         order.initializeOrder();
         log.info("Order with id: {} is initiated", order.getId().getValue());
         return new OrderCreatedEvent(order, ZonedDateTime.now(ZoneId.of(UTC)));

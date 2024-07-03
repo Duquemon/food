@@ -2,12 +2,12 @@ package com.food.ordering.system.order.service.domain.outbox.scheduler.payment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.food.ordering.system.outbox.OutboxStatus;
 import com.food.ordering.system.domain.valueobject.OrderStatus;
 import com.food.ordering.system.order.service.domain.exception.OrderDomainException;
 import com.food.ordering.system.order.service.domain.outbox.model.payment.OrderPaymentEventPayload;
 import com.food.ordering.system.order.service.domain.outbox.model.payment.OrderPaymentOutboxMessage;
 import com.food.ordering.system.order.service.domain.ports.output.repository.PaymentOutboxRepository;
+import com.food.ordering.system.outbox.OutboxStatus;
 import com.food.ordering.system.saga.SagaStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -34,28 +34,27 @@ public class PaymentOutboxHelper {
 
     @Transactional(readOnly = true)
     public Optional<List<OrderPaymentOutboxMessage>> getPaymentOutboxMessageByOutboxStatusAndSagaStatus(
-            OutboxStatus outboxStatus, SagaStatus... sagaStatuses) {
-        return paymentOutboxRepository.findByTypeAndOutboxStatusAndSagaStatus(
-                ORDER_SAGA_NAME,
+            OutboxStatus outboxStatus, SagaStatus... sagaStatus) {
+        return paymentOutboxRepository.findByTypeAndOutboxStatusAndSagaStatus(ORDER_SAGA_NAME,
                 outboxStatus,
-                sagaStatuses);
+                sagaStatus);
     }
 
     @Transactional(readOnly = true)
-    public Optional<OrderPaymentOutboxMessage> getPaymentOutboxMessageBySagaIdAndSagaStatus(
-            UUID sagaId, SagaStatus... sagaStatuses) {
-        return paymentOutboxRepository.findByTypeAndSagaIdAndSagaStatus(ORDER_SAGA_NAME, sagaId, sagaStatuses);
+    public Optional<OrderPaymentOutboxMessage> getPaymentOutboxMessageBySagaIdAndSagaStatus(UUID sagaId,
+                                                                                            SagaStatus... sagaStatus) {
+        return paymentOutboxRepository.findByTypeAndSagaIdAndSagaStatus(ORDER_SAGA_NAME, sagaId, sagaStatus);
     }
 
     @Transactional
     public void save(OrderPaymentOutboxMessage orderPaymentOutboxMessage) {
-        OrderPaymentOutboxMessage response = paymentOutboxRepository.save(orderPaymentOutboxMessage);
-        if (response == null) {
-            log.error("Could not save OrderPaymentOutboxMessage with outbox id: {}", orderPaymentOutboxMessage.getId());
-            throw new OrderDomainException("Could not save OrderPaymentOutboxMessage with id: " +
-                    orderPaymentOutboxMessage.getId());
-        }
-        log.info("OrderPaymentOutboxMessage saved with outbox id: {}", orderPaymentOutboxMessage.getId());
+       OrderPaymentOutboxMessage response = paymentOutboxRepository.save(orderPaymentOutboxMessage);
+       if (response == null) {
+           log.error("Could not save OrderPaymentOutboxMessage with outbox id: {}", orderPaymentOutboxMessage.getId());
+           throw new OrderDomainException("Could not save OrderPaymentOutboxMessage with outbox id: " +
+                   orderPaymentOutboxMessage.getId());
+       }
+       log.info("OrderPaymentOutboxMessage saved with outbox id: {}", orderPaymentOutboxMessage.getId());
     }
 
     @Transactional
@@ -78,8 +77,8 @@ public class PaymentOutboxHelper {
 
     @Transactional
     public void deletePaymentOutboxMessageByOutboxStatusAndSagaStatus(OutboxStatus outboxStatus,
-                                                                      SagaStatus... sagaStatuses) {
-        paymentOutboxRepository.deleteByTypeOutboxStatusAndSagaStatus(ORDER_SAGA_NAME, outboxStatus, sagaStatuses);
+                                                                      SagaStatus... sagaStatus) {
+        paymentOutboxRepository.deleteByTypeAndOutboxStatusAndSagaStatus(ORDER_SAGA_NAME, outboxStatus, sagaStatus);
     }
 
     private String createPayload(OrderPaymentEventPayload paymentEventPayload) {

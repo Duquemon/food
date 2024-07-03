@@ -16,10 +16,8 @@ import java.util.UUID;
 @Table(name = "order_items")
 @Entity
 public class OrderItemEntity {
-
     @Id
     private Long id;
-
     @Id
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ORDER_ID")
@@ -35,7 +33,7 @@ public class OrderItemEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderItemEntity that = (OrderItemEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(order, that.order);
+        return id.equals(that.id) && order.equals(that.order);
     }
 
     @Override
