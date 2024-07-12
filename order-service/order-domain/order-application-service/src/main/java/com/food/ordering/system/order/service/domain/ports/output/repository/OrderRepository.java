@@ -4,6 +4,7 @@ import com.food.ordering.system.domain.valueobject.OrderId;
 import com.food.ordering.system.order.service.domain.entity.Order;
 import com.food.ordering.system.order.service.domain.valueobject.TrackingId;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository {
@@ -13,4 +14,6 @@ public interface OrderRepository {
     Optional<Order> findById(OrderId orderId);
 
     Optional<Order> findByTrackingId(TrackingId trackingId);
+
+    List<Order> getAll();
 }

@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Component
 class CustomerCreateCommandHandler {
@@ -41,4 +44,14 @@ class CustomerCreateCommandHandler {
         log.info("Returning CustomerCreatedEvent for customer id: {}", createCustomerCommand.getCustomerId());
         return customerCreatedEvent;
     }
+
+    @Transactional(readOnly = true)
+    public List<CreateCustomerCommand> getListCustomer() {
+        List<Customer> customers = customerRepository.getAll();
+
+        return customers.stream().map(customerDataMapper::customerToCreateCustomerCommand).collect(Collectors.toList());
+    }
+
+
+
 }
