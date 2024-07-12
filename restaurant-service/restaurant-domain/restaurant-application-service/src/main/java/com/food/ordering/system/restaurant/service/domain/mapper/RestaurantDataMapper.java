@@ -4,10 +4,7 @@ import com.food.ordering.system.domain.valueobject.Money;
 import com.food.ordering.system.domain.valueobject.OrderId;
 import com.food.ordering.system.domain.valueobject.OrderStatus;
 import com.food.ordering.system.domain.valueobject.RestaurantId;
-import com.food.ordering.system.restaurant.service.dataaccess.restaurant.entity.ProductEntity;
-import com.food.ordering.system.restaurant.service.domain.dto.ProductResponseCommand;
 import com.food.ordering.system.restaurant.service.domain.dto.RestaurantApprovalRequest;
-import com.food.ordering.system.restaurant.service.domain.dto.RestaurantResponse;
 import com.food.ordering.system.restaurant.service.domain.entity.OrderDetail;
 import com.food.ordering.system.restaurant.service.domain.entity.Product;
 import com.food.ordering.system.restaurant.service.domain.entity.Restaurant;
@@ -46,21 +43,6 @@ public class RestaurantDataMapper {
                 .orderApprovalStatus(orderApprovalEvent.getOrderApproval().getApprovalStatus().name())
                 .createdAt(orderApprovalEvent.getCreatedAt())
                 .failureMessages(orderApprovalEvent.getFailureMessages())
-                .build();
-    }
-
-    public ProductResponseCommand productEntityToProductResponseCommand(ProductEntity productEntity) {
-        return ProductResponseCommand.builder()
-                .id(productEntity.getId())
-                .price(new Money(productEntity.getPrice()))
-                .name(productEntity.getName())
-                .build();
-    }
-
-    public RestaurantResponse restaurantEntityToRestaurantResponse(com.food.ordering.system.restaurant.service.dataaccess.restaurant.entity.Restaurant restaurantEntity) {
-        return RestaurantResponse.builder()
-                .id(restaurantEntity.getId().toString())
-                .name(restaurantEntity.getName())
                 .build();
     }
 }

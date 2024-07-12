@@ -11,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
-
 @Slf4j
 @Validated
 @Service
@@ -39,10 +37,5 @@ class CustomerApplicationServiceImpl implements CustomerApplicationService {
         return customerDataMapper
                 .customerToCreateCustomerResponse(customerCreatedEvent.getCustomer(),
                         "Customer saved successfully!");
-    }
-
-    @Override
-    public List<CreateCustomerCommand> getListCustomer() {
-        return customerCreateCommandHandler.getListCustomer();
     }
 }

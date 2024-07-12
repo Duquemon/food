@@ -11,9 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -39,17 +37,4 @@ public class OrderTrackCommandHandler {
            }
            return orderDataMapper.orderToTrackOrderResponse(orderResult.get());
     }
-
-    @Transactional(readOnly = true)
-    public List<TrackOrderResponse> getAllTracks() {
-        List<Order> orders = orderRepository.getAll();
-                //orderRepository.findByTrackingId(new TrackingId(trackOrderQuery.getOrderTrackingId()));
-        if (orders.isEmpty()) {
-            log.warn("Could not find orders");
-            throw new OrderNotFoundException("Could not find orders");
-        }
-        return orders.stream().map(orderDataMapper::orderToTrackOrderResponse).collect(Collectors.toList());
-    }
-
-
 }

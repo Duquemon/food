@@ -36,7 +36,7 @@ public class OrderCreateCommandHandler {
         OrderCreatedEvent orderCreatedEvent = orderCreateHelper.persistOrder(createOrderCommand);
         log.info("Order is created with id: {}", orderCreatedEvent.getOrder().getId().getValue());
         CreateOrderResponse createOrderResponse = orderDataMapper.orderToCreateOrderResponse(orderCreatedEvent.getOrder(),
-                orderCreatedEvent.hasDiscount ? "Order created successfully with discount" : "Order created successfully");
+                "Order created successfully");
 
         paymentOutboxHelper.savePaymentOutboxMessage(orderDataMapper
                 .orderCreatedEventToOrderPaymentEventPayload(orderCreatedEvent),

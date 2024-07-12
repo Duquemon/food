@@ -9,12 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "http://localhost:5173/", maxAge = 3600)
 @RequestMapping(value = "/orders", produces = "application/vnd.api.v1+json")
 public class OrderController {
 
@@ -39,12 +37,5 @@ public class OrderController {
                orderApplicationService.trackOrder(TrackOrderQuery.builder().orderTrackingId(trackingId).build());
        log.info("Returning order status with tracking id: {}", trackOrderResponse.getOrderTrackingId());
        return  ResponseEntity.ok(trackOrderResponse);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<TrackOrderResponse>> getOrderByTrackingId() {
-        List<TrackOrderResponse> trackOrderResponse =
-                orderApplicationService.getAllTracks();
-        return  ResponseEntity.ok(trackOrderResponse);
     }
 }

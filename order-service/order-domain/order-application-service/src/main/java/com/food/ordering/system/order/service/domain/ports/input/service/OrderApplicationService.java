@@ -6,13 +6,10 @@ import com.food.ordering.system.order.service.domain.dto.track.TrackOrderQuery;
 import com.food.ordering.system.order.service.domain.dto.track.TrackOrderResponse;
 
 import javax.validation.Valid;
-import java.util.List;
 
 public interface OrderApplicationService {
 
     CreateOrderResponse createOrder(@Valid CreateOrderCommand createOrderCommand);
 
     TrackOrderResponse trackOrder(@Valid TrackOrderQuery trackOrderQuery);
-
-    List<TrackOrderResponse> getAllTracks();
 }

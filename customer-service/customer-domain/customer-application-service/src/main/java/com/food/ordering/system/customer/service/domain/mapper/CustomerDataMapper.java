@@ -20,14 +20,4 @@ public class CustomerDataMapper {
     public CreateCustomerResponse customerToCreateCustomerResponse(Customer customer, String message) {
         return new CreateCustomerResponse(customer.getId().getValue(), message);
     }
-
-    public CreateCustomerCommand customerToCreateCustomerCommand(Customer customer) {
-        return CreateCustomerCommand.builder()
-                .customerId(customer.getId().getValue())
-                .firstName(customer.getFirstName())
-                .lastName(customer.getLastName())
-                .scoring(customer.getScoring())
-                .username(customer.getUsername())
-                .build();
-    }
 }
