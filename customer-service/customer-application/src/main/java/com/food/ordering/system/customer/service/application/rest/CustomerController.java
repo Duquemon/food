@@ -5,13 +5,13 @@ import com.food.ordering.system.customer.service.domain.create.CreateCustomerRes
 import com.food.ordering.system.customer.service.domain.ports.input.service.CustomerApplicationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
+@CrossOrigin(origins = "http://localhost:5173/", maxAge = 3600)
 @RequestMapping(value = "/customers", produces = "application/vnd.api.v1+json")
 public class CustomerController {
 
@@ -27,6 +27,13 @@ public class CustomerController {
         log.info("Creating customer with username: {}", createCustomerCommand.getUsername());
         CreateCustomerResponse response = customerApplicationService.createCustomer(createCustomerCommand);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CreateCustomerCommand>> getListCustomer() {
+        log.info("Get all customer");
+        return ResponseEntity.ok(customerApplicationService.getListCustomer());
+
     }
 
 }

@@ -51,7 +51,7 @@ public class OrderCreateHelper {
         Restaurant restaurant = checkRestaurant(createOrderCommand);
         Order order = orderDataMapper.createOrderCommandToOrder(createOrderCommand);
         OrderCreatedEvent orderCreatedEvent = orderDomainService.validateAndInitiateOrder(order, restaurant, hasDiscount);
-
+        orderCreatedEvent.hasDiscount = hasDiscount;
         saveOrder(order);
         log.info("Order is created with id: {}", orderCreatedEvent.getOrder().getId().getValue());
         return orderCreatedEvent;
@@ -61,12 +61,13 @@ public class OrderCreateHelper {
         if (customer.getScoring() >= 100) {
             createOrderCommand.divide(2);
             customer.setScoring(0);
+            customerRepository.save(customer);
             return true;
         } else {
             customer.setScoring(customer.getScoring() + 10);
+            customerRepository.save(customer);
+            return false;
         }
-        customerRepository.save(customer);
-        return false;
     }
 
     private Restaurant checkRestaurant(CreateOrderCommand createOrderCommand) {
